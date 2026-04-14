@@ -18,10 +18,14 @@ export default function TaskRow({ task, updateTask, deleteTask }) {
   }
 
   async function saveEdit() {
+    if (!editTitle.trim()) {
+      alert("Title required");
+      return;
+    }
+
     const ok = await updateTask(task.id, {
       title: editTitle,
       description: editDescription,
-      completed: task.completed ? 1 : 0,
     });
 
     if (ok) setEditing(false);
@@ -34,7 +38,6 @@ export default function TaskRow({ task, updateTask, deleteTask }) {
   return (
     <tr className="border-t border-white/10 hover:bg-white/5 transition">
 
-      {/* Title */}
       <td className="p-3 font-semibold">
         {editing ? (
           <input
@@ -47,7 +50,6 @@ export default function TaskRow({ task, updateTask, deleteTask }) {
         )}
       </td>
 
-      {/* Description */}
       <td className="p-3 text-gray-300">
         {editing ? (
           <input
@@ -60,7 +62,6 @@ export default function TaskRow({ task, updateTask, deleteTask }) {
         )}
       </td>
 
-      {/* Priority */}
       <td className="p-3">
         <select
           value={task.priority}
@@ -73,7 +74,6 @@ export default function TaskRow({ task, updateTask, deleteTask }) {
         </select>
       </td>
 
-      {/* Status */}
       <td className="p-3">
         <select
           value={task.status}
@@ -86,42 +86,27 @@ export default function TaskRow({ task, updateTask, deleteTask }) {
         </select>
       </td>
 
-      {/* Created At */}
       <td className="p-3 text-gray-400">
         {task.created_at?.split("T")[0]}
       </td>
 
-
-      {/* Actions */}
       <td className="p-3 text-center flex justify-center gap-3">
         {editing ? (
           <>
-            <button
-              className="p-2 rounded-md bg-green-600/20 hover:bg-green-600/30 border border-white/10 transition"
-              onClick={saveEdit}
-            >
-              <Save size={16} className="text-green-300" />
+            <button onClick={saveEdit}>
+              <Save size={16} />
             </button>
-            <button
-              className="p-2 rounded-md bg-red-600/10 hover:bg-red-600/20 border border-white/10 transition"
-              onClick={cancelEdit}
-            >
-              <X size={16} className="text-white/80" />
+            <button onClick={cancelEdit}>
+              <X size={16} />
             </button>
           </>
         ) : (
           <>
-            <button
-              className="p-2 rounded-md bg-white/10 hover:bg-white/20 border border-white/10 transition"
-              onClick={startEdit}
-            >
-              <Pencil size={16} className="text-yellow-400" />
+            <button onClick={startEdit}>
+              <Pencil size={16} />
             </button>
-            <button
-              className="p-2 rounded-md bg-white/10 hover:bg-white/20 border border-white/10 transition"
-              onClick={() => deleteTask(task.id)}
-            >
-              <Trash2 size={16} className="text-red-400" />
+            <button onClick={() => deleteTask(task.id)}>
+              <Trash2 size={16} />
             </button>
           </>
         )}

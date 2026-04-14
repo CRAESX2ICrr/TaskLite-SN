@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function AboutPage() {
   return (
     <main className="flex-1 flex flex-col items-center px-6 py-24 text-white animate-fadeIn">
@@ -58,12 +60,12 @@ export default function AboutPage() {
         <footer className="pt-2 text-sm text-white/60">
           <p>
             Return to{" "}
-            <a
+            <Link
               href="/"
               className="text-blue-300 hover:text-blue-400 underline transition"
             >
               Home
-            </a>
+            </Link>
           </p>
         </footer>
 

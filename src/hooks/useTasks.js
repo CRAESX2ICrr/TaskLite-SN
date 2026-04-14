@@ -1,123 +1,80 @@
-// src/util/useTasks.js
 "use client";
 import { useEffect, useState } from "react";
-import { exportToCSV } from "@/lib/exportToCSV";
 
 export function useTasks() {
-  const [tasks, setTasks] = useState([]);                                 //store list of tsk mem, func-change tsk. reac st var
+  const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  //
-  // Fetch tasks 
-  //
+  // Fetch tasks (with simple filters)
   async function loadTasks(filters = {}) {
     setLoading(true);
     setError(null);
 
     try {
-      const params = new URLSearchParams();
-      if (filters.q) params.set("q", filters.q);
-      if (filters.status) params.set("status", filters.status);
-      if (filters.priority) params.set("priority", filters.priority);
-      if (filters.sort) params.set("sort", filters.sort);
+      let query = [];
 
-      const url = "/api/tasks" + (params.toString() ? `?${params}` : "");
-      const res = await fetch(url);                                                   //fet tsk from backend
-      if (!res.ok) throw new Error(`Failed to fetch tasks (${res.status})`);
+      if (filters.status) query.push(`status=${filters.status}`);
+      if (filters.priority) query.push(`priority=${filters.priority}`);
 
-      const data = await res.json();                                                  //parse json resp
-      setTasks(data.tasks || []);                                                     //upd state w/ fecthd tsk
-    } 
-    
-    catch (err) {
-      console.error("Error loading tasks:", err);
+      const url = "/api/tasks" + (query.length ? `?${query.join("&")}` : "");
+
+      const res = await fetch(url);
+      if (!res.ok) throw new Error("Failed to fetch tasks");
+
+      const data = await res.json();
+      setTasks(data.tasks || []);
+    } catch (err) {
+      console.error(err);
       setError(err.message);
     } finally {
       setLoading(false);
     }
   }
 
-  //
-  // Update a task 
-  //
-async function updateTask(id, updates) {
-  try {
-    const current = tasks.find(t => t.id === id);
-    if (!current) throw new Error("Task not found");
-
-    const payload = {
-      title: current.title,
-      description: current.description,
-      priority: current.priority,
-      status: current.status,
-      ...updates,
-    };
-
-    const res = await fetch(`/api/tasks/${id}`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    const text = await res.text();
-    let json = {};
+  // Update task
+  async function updateTask(id, updates) {
     try {
-      json = text ? JSON.parse(text) : {};
-    } catch {
-      json = { task: null };
-    }
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updates),
+      });
 
-    if (!res.ok) throw new Error(json.error || text || "Update failed");
+      if (!res.ok) throw new Error("Update failed");
 
-    await loadTasks();                                                        // reload full task
+      // update locally instead of refetch
+      setTasks((prev) =>
+        prev.map((t) => (t.id === id ? { ...t, ...updates } : t))
+      );
 
-    return true;
-  } catch (err) {
-    console.error("Update failed:", err);
-    alert("Failed to update task: " + err.message);
-    return false;
-  }
-}
-
-
-  //
-  // Delete task
-  //
-  async function deleteTask(id) {
-    try {
-      const res = await fetch(`/api/tasks/${id}`, { method: "DELETE" });
-      const text = await res.text();
-      let json;
-      try {
-        json = text ? JSON.parse(text) : {};
-      } catch {
-        json = { error: text };
-      }
-
-      if (!res.ok) {
-        throw new Error(json.error || text || `Delete failed (${res.status})`);
-      }
-
-      setTasks((prev) => prev.filter((t) => t.id !== id));
       return true;
     } catch (err) {
-      console.error("Delete failed:", err);
-      alert("Failed to delete task: " + err.message);
+      console.error(err);
+      setError(err.message);
       return false;
     }
   }
 
-  //
-  // Export CSV
-  //
-  function exportTasksCSV() {
-    exportToCSV(tasks);
+  // Delete task
+  async function deleteTask(id) {
+    try {
+      const res = await fetch(`/api/tasks/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!res.ok) throw new Error("Delete failed");
+
+      setTasks((prev) => prev.filter((t) => t.id !== id));
+      return true;
+    } catch (err) {
+      console.error(err);
+      setError(err.message);
+      return false;
+    }
   }
 
-  //
-  // Load tasks on mount
-  //
+  // Load on mount
   useEffect(() => {
     loadTasks();
   }, []);
@@ -129,7 +86,5 @@ async function updateTask(id, updates) {
     loadTasks,
     updateTask,
     deleteTask,
-    exportTasksCSV,
-    setTasks, 
   };
 }
