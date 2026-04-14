@@ -15,27 +15,27 @@ UI BG       - REACTBITS
 tasklite_SN/
 ├── src/
 │   ├── app/
-│   │   ├── page.js              # Main homepage (UI + wiring)
+│   │   ├── page.js                 # Main homepage
 │   │   ├── about/
-│   │   │   └── page.js          # About page
+│   │   │   └── page.js             # About page
 │   │   ├── api/
 │   │   │   ├── tasks/
-│   │   │   │   ├── route.js     # GET, POST (list + create)
+│   │   │   │   ├── route.js        # GET, POST (list + create)
 │   │   │   │   └── [id]/
-│   │   │   │       └── route.js # PUT, DELETE (update + delete)
+│   │   │   │       └── route.js    # PUT, DELETE (update + delete)
 │
 │   ├── components/
-│   │   ├── TaskForm.jsx         # Create task
-│   │   ├── TaskFilter.jsx       # Search & filters
-│   │   ├── TaskList.jsx         # Task table
-│   │   └── TaskRow.jsx          # Single task row
+│   │   ├── TaskForm.jsx            # Create task
+│   │   ├── TaskFilter.jsx          # Search & filters
+│   │   ├── TaskList.jsx            # Task table
+│   │   └── TaskRow.jsx             # Single task row
 │
 │   ├── hooks/
-│   │   └── useTasks.js          # State + CRUD logic
+│   │   └── useTasks.js             # State + CRUD logic
 │
 │   ├── lib/
-│   │   └── db.js                # MySQL connection
+│   │   └── db.js                   # MySQL connection
 │
-├── .env.local                  # Environment variables
-├── package.json               # Dependencies
-└── README.md                  # Documentation
+├── .env                            # Environment variables
+├── package.json                    # Dependencies
+└── README.md                       # Documentation
