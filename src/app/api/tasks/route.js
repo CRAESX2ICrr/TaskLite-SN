@@ -13,25 +13,25 @@ export async function GET(request) {
     let sql = "SELECT * FROM tasks WHERE 1=1";
     let params = [];
 
-    // 🔍 search
+    // search
     if (q) {
       sql += " AND (title LIKE ? OR description LIKE ?)";
       params.push(`%${q}%`, `%${q}%`);
     }
 
-    // 📊 status filter
+    // status filter
     if (status && status !== "All") {
       sql += " AND status = ?";
       params.push(status);
     }
 
-    // ⚡ priority filter
+    // priority filter
     if (priority && priority !== "All") {
       sql += " AND priority = ?";
       params.push(priority);
     }
 
-    // 🔽 sorting
+    // sorting
     if (sort === "oldest") {
       sql += " ORDER BY id ASC";
     } else {
